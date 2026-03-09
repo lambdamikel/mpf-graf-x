@@ -22,7 +22,7 @@ Hackaday.io project page: https://hackaday.io/project/204153-3d-graphics-on-the-
 
 The GRAF-X card plugs into the MPF-1 expansion bus and decodes I/O port `0x00F0` using a **GAL22V10** programmable logic device. The Z80 sends graphics commands over this port to an **ATmega1284p**, which drives an **[Adafruit 1.8" Color TFT LCD (ST7735R, 128×160)](https://www.adafruit.com/product/358)** via SPI using the Adafruit GFX library.
 
-The PCB is a repurposed **LambdaSpeak FS** board originally designed for the Amstrad CPC. It already carries the ATmega footprint and an SPI pin header, making it suitable for this project with a small adapter board (gerbers included). To connect the GRAF-X card to the MPF-1 expansion bus, a **[LambdaBoard II](https://github.com/lambdamikel/LambdaBoard)** backplane extender is used.
+The PCB is a repurposed **[LambdaSpeak FS](https://github.com/lambdamikel/LambdaSpeak-FS)** board originally designed for the Amstrad CPC. It already carries the ATmega footprint and an SPI pin header, making it suitable for this project with a small adapter board (gerbers included). To connect the GRAF-X card to the MPF-1 expansion bus, a **[LambdaBoard II](https://github.com/lambdamikel/LambdaBoard)** backplane extender is used.
 
 ---
 
@@ -34,7 +34,7 @@ The PCB is a repurposed **LambdaSpeak FS** board originally designed for the Ams
 | MCU | ATmega1284p @ 16 MHz external crystal |
 | Display | [Adafruit 1.8" Color TFT LCD with MicroSD Breakout (ST7735R, 128×160)](https://www.adafruit.com/product/358) |
 | I/O decoder | GAL22V10 (CUPL `.PLD` source in `GAL/`) |
-| Base PCB | LambdaSpeak FS for Amstrad CPC (repurposed) |
+| Base PCB | [LambdaSpeak FS](https://github.com/lambdamikel/LambdaSpeak-FS) for Amstrad CPC (repurposed) |
 | Adapter PCB | MPF-1 adapter board (gerbers in `gerbers/`) |
 
 **Why ATmega1284p?** It has 16 KB SRAM (vs. 4 KB on the 644p), which is needed to hold the 8 KB graphics command buffer alongside the Adafruit canvas for double-buffering.
@@ -64,6 +64,29 @@ The `GAL/MPF-VDP-DECODER.PLD` (CUPL source) decodes Z80 I/O port `0x00F0` from 1
 
 The write strobe clocks a 74LS374 flip-flop to latch the 8-bit data byte from the Z80.
 
+### Connecting the TFT Display
+
+The TFT display connects to the LambdaSpeak FS board via DuPont wires from the **J2** and **J3** pin headers. An additional wire from **J7 pin 3** supplies 5V to the display's backlight (`LITE`) — this connection is required; without it the backlight will not illuminate.
+
+![J2 and J3 header pinout](pics/j2-j3-headers.png)
+
+| LambdaSpeak FS | TFT Display |
+|----------------|-------------|
+| J2 pin 1 GND | GND |
+| J2 pin 2 EPS_RST | RESET |
+| J2 pin 3 EPS_CS | TF_CS |
+| J2 pin 4 SCK | SCK |
+| J2 pin 6 EPS_MOSI | MOSI |
+| J3 pin 2 VCC | VCC |
+| J3 pin 7 EPS_RDY | O/C |
+| J7 pin 3 VCC | LITE |
+
+Illustration for display connection — DuPont wiring and the 5V LITE wire:
+
+![Display wiring overview](images/display-wires-and-5v-lite.jpg)
+
+![5V LITE wire detail](images/lite-5v-wire.jpg)
+
 ---
 
 ## Bill of Materials
@@ -83,9 +106,9 @@ The write strobe clocks a 74LS374 flip-flop to latch the 8-bit data byte from th
 | D1 | Status LED | Standard 5 mm, any color |
 | J1 | Power jack | 2.1 mm × 5.5 mm barrel-type |
 | — | Power supply | 5V 1A DC wall wart, standard Arduino-style 2.1 mm × 5.5 mm barrel plug, center-positive |
-| SW3 | Clock select | Wire bridge — upper/lower holes, 7th from left (2nd from right) |
+| SW3 | GND connection for Segment LED Bar | Wire bridge — upper/lower holes, 7th from left (2nd from right) |
 | — | TFT display | [Adafruit 1.8" Color TFT LCD with MicroSD Breakout — ST7735R, 128×160, SPI](https://www.adafruit.com/product/358), connected via DuPont wires |
-| — | MPF-1 backplane extender | [LambdaBoard II](https://github.com/lambdamikel/LambdaBoard) — connects GRAF-X card to the MPF-1 expansion bus |
+| — | MPF-1 backplane extender | [LambdaBoard II](https://github.com/lambdamikel/LambdaBoard) — connects GRAF-X card to the MPF-1 expansion bus via provided adapter (see `gerbers/`) |
 | — | Bus connector (GRAF-X card) | 2×25 pin male IDC box header, right-angled, 2.54 mm pitch |
 | — | Adapter board connectors | Double-row breakable pin headers, 2.54 mm pitch |
 | — | General pin headers | Single-row breakable pin headers, 2.54 mm pitch |
@@ -330,4 +353,4 @@ Full RetroChallenge 2025/10 playlist: https://www.youtube.com/playlist?list=PLvd
 - **[Claude Code](https://claude.ai/code) (claude-sonnet-4-6)** — authored this README
 - **Brian Chiaha** — Original Z80 3D cube / LCD graphics library (ported for cube3.asm)
 - **Adafruit** — GFX and ST7735/ST7789 display libraries
-- **LambdaSpeak FS PCB** — Base board repurposed for this project
+- **[LambdaSpeak FS](https://github.com/lambdamikel/LambdaSpeak-FS) PCB** — Base board repurposed for this project
