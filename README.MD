@@ -263,7 +263,7 @@ The program draws a diagonal net pattern on the display: a series of lines sweep
 
 Assemble and load `net.asm` at address `$1800` on the MPF-1, then execute from there (`ADDR` → `1800` → `GO`).
 
-The MPF-1's 7-segment display will first show **`PEtS`** (step), prompting you to press a key (0–9) to choose how many pixels apart each line will be. It then shows **`roloC`** (color), prompting you to press a key to select a palette color (0 = black, 1 = white, 2 = red … 8 = orange, see palette table above). After both inputs the drawing starts immediately.
+The MPF-1's 7-segment display will first show **`StEP`** (step), prompting you to press a key (0–9) to choose how many pixels apart each line will be. It then shows **`Color`** (color), prompting you to press a key to select a palette color (0 = black, 1 = white, 2 = red … 8 = orange, see palette table above). After both inputs the drawing starts immediately.
 
 ### How it works — annotated VDP commands
 
